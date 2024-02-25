@@ -20,7 +20,7 @@
 const { app,
     BrowserWindow,
     ipcMain,
-    shell} = require("electron");
+    shell } = require("electron");
 
 //node js dependencies
 const path = require("path");
@@ -67,7 +67,7 @@ const argv = require("yargs")(process.argv.slice(2))
             type: "string",
         });
     }, (argv) => {
-        let regexp = new RegExp(/\.w2bzip$/,"g");
+        let regexp = new RegExp(/\.w2bzip$/, "g");
         if (!regexp.test(argv.savefile)) {
             console.log("Missing .w2bzip extension.".red);
             app.quit();
@@ -92,8 +92,8 @@ const argv = require("yargs")(process.argv.slice(2))
             type: "boolean",
         });
     }, (argv) => {
-        let regexpI = new RegExp(/\.w2bzip$/,"g");
-        let regexpO = new RegExp(/\.mp4$/,"g");
+        let regexpI = new RegExp(/\.w2bzip$/, "g");
+        let regexpO = new RegExp(/\.mp4$/, "g");
         if (!regexpI.test(argv.input)) {
             console.log("Missing .w2bzip extension.".red);
             app.quit();
@@ -119,7 +119,7 @@ exports.export_win = export_win;
  * Creates the main app window.
  *
  */
-function createWindow () {
+function createWindow() {
     main_log.info("creating main renderer...");
 
     // Create the browser window.
@@ -178,7 +178,7 @@ app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         main_log.info("quitting...");
         try {
-            fsExtra.emptyDirSync(path.resolve(working_dir, "./temp")); //clear cache
+            //fsExtra.emptyDirSync(path.resolve(working_dir, "./temp")); //clear cache
         }
         catch (error) {
             main_log.error("Couldn't clear all the cache because some files are still busy.");
@@ -209,8 +209,8 @@ function createExportWin() {
 
     export_win = new BrowserWindow({
         icon: path.join(__dirname, "assets/icons/wav2bar_square_logo.png"),
-        width: 1500,
-        height: 1000,
+        width: 1024,
+        height: 576,
         resizable: false,
         frame: false,
         enableLargerThanScreen: true,
@@ -359,14 +359,14 @@ function Init() {
     fsExtra.emptyDirSync(path_temp);
     //recreate the temp hierarchy
     if (!fs.existsSync(path_temp_render)) fs.mkdirSync(path_temp_render);
-    if(!fs.existsSync(path_temp_current_save)) fs.mkdirSync(path_temp_current_save);
+    if (!fs.existsSync(path_temp_current_save)) fs.mkdirSync(path_temp_current_save);
 
     //create user directory
-    if(!fs.existsSync(path_user)) fs.mkdirSync(path_user);
-    if(!fs.existsSync(path_user_settings)) fs.mkdirSync(path_user_settings);
+    if (!fs.existsSync(path_user)) fs.mkdirSync(path_user);
+    if (!fs.existsSync(path_user_settings)) fs.mkdirSync(path_user_settings);
 
     //create logs directory
-    if(!fs.existsSync(path_logs)) fs.mkdirSync(path_logs);
+    if (!fs.existsSync(path_logs)) fs.mkdirSync(path_logs);
 
 
 
@@ -377,14 +377,14 @@ function Init() {
 
     log4js.configure({
         appenders: {
-            file: {type: "file", filename: log_path},
-            console: {type: "console"},
+            file: { type: "file", filename: log_path },
+            console: { type: "console" },
         },
         categories: {
-            main: {appenders: ["file","console"], level: "trace"},//main process
-            main_renderer: {appenders: ["file","console"], level: "trace"},//main renderer process of the app
-            export: {appenders: ["file","console"],level: "trace"},//export process
-            default: {appenders: ["file","console"],level: "trace"},
+            main: { appenders: ["file", "console"], level: "trace" },//main process
+            main_renderer: { appenders: ["file", "console"], level: "trace" },//main renderer process of the app
+            export: { appenders: ["file", "console"], level: "trace" },//export process
+            default: { appenders: ["file", "console"], level: "trace" },
         },
     });
 
@@ -575,7 +575,7 @@ ipcMain.handle("open-local-html", async (event, link) => {
  * @param {String} path_to_open
  */
 ipcMain.handle("open-folder-in-file-explorer", async (event, path_to_open) => {
-    if (process.platform === "win32") path_to_open = path_to_open.replaceAll("/","\\");
+    if (process.platform === "win32") path_to_open = path_to_open.replaceAll("/", "\\");
     main_log.warn(`opening ${path_to_open}.`);
     var regexp = new RegExp(/^\.\//);
     if (regexp.test(path_to_open)) path_to_open = path.join(__dirname, path_to_open);
@@ -641,9 +641,9 @@ ipcMain.handle("read-dir", async (event, directory) => {
         //differentiate files and folders
         var files_object = [];
 
-        for (let i=0; i<files.length; i++) {
+        for (let i = 0; i < files.length; i++) {
             //add file to returned list
-            files_object.push({name: files[i], type: "unknown"});
+            files_object.push({ name: files[i], type: "unknown" });
 
             //some files should not be analyzed whatsoever
             try {
@@ -680,7 +680,7 @@ ipcMain.handle("read-dir", async (event, directory) => {
 ipcMain.handle("make-dir", async (event, path) => {
     try {
         main_log.info(`making directory ${path}`);
-        await fs.promises.mkdir(path, {recursive: true});
+        await fs.promises.mkdir(path, { recursive: true });
         main_log.info(`${path} created.`);
     } catch (error) {
         main_log.error(`error making ${path}: ${error}`);
@@ -725,18 +725,18 @@ ipcMain.handle("write-audio-to-temp", async (event, arrayBuffer, type) => {
     switch (type) {
         case "audio/x-wav":
         case "audio/wav":
-            await fs.promises.writeFile(path.resolve(working_dir ,"./temp/temp.wav"), arrayBuffer);
+            await fs.promises.writeFile(path.resolve(working_dir, "./temp/temp.wav"), arrayBuffer);
             break;
 
 
         case "audio/mpeg":
         case "audio/mp3":
-            await fs.promises.writeFile(path.resolve(working_dir ,"./temp/temp.mp3"), arrayBuffer);
+            await fs.promises.writeFile(path.resolve(working_dir, "./temp/temp.mp3"), arrayBuffer);
             break;
 
 
         case "application/ogg":
-            await fs.promises.writeFile(path.resolve(working_dir ,"./temp/temp.ogg"), arrayBuffer);
+            await fs.promises.writeFile(path.resolve(working_dir, "./temp/temp.ogg"), arrayBuffer);
             break;
 
 
@@ -746,7 +746,7 @@ ipcMain.handle("write-audio-to-temp", async (event, arrayBuffer, type) => {
     }
 
     main_log.debug("audio cached.");
-} );
+});
 
 
 
@@ -792,7 +792,7 @@ ipcMain.handle("pcm-to-spectrum", async (event, waveform) => {
  * @param {Boolean} use_jpeg
  */
 ipcMain.handle("export-screen", async (event, screen_data, name, use_jpeg) => {
-    
+
     main_log.info("Capture requested.");
     main_log.info(`frame: ${name}`);
 
@@ -802,6 +802,7 @@ ipcMain.handle("export-screen", async (event, screen_data, name, use_jpeg) => {
         main_log.info("captured! Writing file...");
 
         //create the file
+        use_jpeg = false
         if (use_jpeg) await fs.promises.writeFile(path.resolve(working_dir, `./temp/render/${name}.jpeg`), image.toJPEG(100));
         else await fs.promises.writeFile(path.resolve(working_dir, `./temp/render/${name}.png`), image.toPNG());
         main_log.info("image of the screen created!");
@@ -845,7 +846,7 @@ ipcMain.handle("set-ffprobe-path", async (event, path) => {
  * @param {Boolean} use_jpeg use jpeg images instead of png
  */
 ipcMain.handle("create-video", async (event, screen, audio_format, fps, duration, output_path, use_jpeg) => {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         main_log.info(`creating video: ${screen.width}x${screen.height}, ${audio_format}, ${fps}fps, duration: ${duration}s, at ${output_path}`);
 
         //get audio path
@@ -884,7 +885,8 @@ ipcMain.handle("create-video", async (event, screen, audio_format, fps, duration
         // });
 
         //command
-        let frames_input = (use_jpeg)? "./temp/render/frame%d.jpeg" : "./temp/render/frame%d.png";
+        use_jpeg = false
+        let frames_input = (use_jpeg) ? "./temp/render/frame%d.jpeg" : "./temp/render/frame%d.png";
         ffmpeg()
             .addInput(path.resolve(working_dir, frames_input))
             .inputFPS(fps)
@@ -893,20 +895,27 @@ ipcMain.handle("create-video", async (event, screen, audio_format, fps, duration
             .fps(fps)
             .duration(duration)
             .videoCodec("libx264")
+            .addOption("-crf", "0")//lossless
+            .addOption("-preset", "veryslow")
+            //-preset veryslow -qp 0
             .outputOptions(["-pix_fmt yuv420p"])//avoid possible trouble in some apps like QuickTime
-            .on("start", function() {
+            .on("start", function (commandLine) {
+                console.log('Spawned FFmpeg with command: ' + commandLine);
                 main_log.info("started creating the video...");
             })
-            .on("progress", function(info) {
+            .on("progress", function (info) {
                 main_log.info(`${info.frames} frames rendered, ${info.timemark} seconds rendered`);
                 win.webContents.send("encoding-progress", info);
             })
-            .on("end", function() {
+            .on("end", function () {
                 main_log.info("Video created!");
                 resolve();
                 win.webContents.send("encoding-finished", true);
+                setTimeout(() => {
+                    process.exit(0);
+                }, 2000);
             })
-            .on("error", function(error) {
+            .on("error", function (error) {
                 main_log.error("an error occured in the process: " + error.message);
                 reject(error);
                 win.webContents.send("encoding-finished", false);
@@ -933,7 +942,7 @@ ipcMain.handle("cache-save-file", async (event, save_path) => {
 
     //check extension
     var regexp = /\.w2bzip$/;
-    if(!regexp.test(save_path)) {
+    if (!regexp.test(save_path)) {
         main_log.error("failed to create the save file: missing .w2bzip extension!");
         throw "missing .w2bzip extension!";
     }
@@ -949,7 +958,7 @@ ipcMain.handle("cache-save-file", async (event, save_path) => {
     await zipper.unzip(path_save_to_load, function (error, unzipped) {
         if (!error) {
             // extract to the current working directory
-            unzipped.save(path_current_save, function() {
+            unzipped.save(path_current_save, function () {
                 sender.webContents.send("finished-caching-save");
             });
         } else {
@@ -972,20 +981,20 @@ ipcMain.handle("create-save-file", async (event, save_path) => {
 
     //check extension
     var regexp = /\.w2bzip$/;
-    if(!regexp.test(save_path)) {
+    if (!regexp.test(save_path)) {
         main_log.error("failed to create the save file: missing .w2bzip extension!");
         throw "missing .w2bzip extension!";
     }
 
     //zip current save
-    var save_path_zip = save_path.replace(".w2bzip",".zip");
-    zipper.zip(path.resolve(working_dir, "./temp/current_save"), function(error, zipped) {
+    var save_path_zip = save_path.replace(".w2bzip", ".zip");
+    zipper.zip(path.resolve(working_dir, "./temp/current_save"), function (error, zipped) {
 
         if (!error) {
             zipped.compress(); // compress before exporting
 
             //save the zipped file to disk
-            zipped.save(save_path_zip, function(error) {
+            zipped.save(save_path_zip, function (error) {
                 if (!error) {
                     main_log.info("zipped successfully!");
 
